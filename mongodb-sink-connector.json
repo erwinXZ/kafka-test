@@ -1,16 +1,16 @@
 {
-  "name": "mongo-sink",
+  "name": "mongo-sink-connector",
   "config": {
     "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
     "tasks.max": "1",
     "topics": "dbserver1.public.testdb",
-    "connection.uri": "mongodb://mongo:mongo123@mongo:27017",
+    "connection.uri": "mongodb://mongo:mongo123@172.23.0.3:27017",
     "database": "testdb",
     "collection": "data_table",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "key.converter.schemas.enable": "false",
     "value.converter.schemas.enable": "false",
-    "writemodel.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy"
+    "write.model.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy"
   }
 }

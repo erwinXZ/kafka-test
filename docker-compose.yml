@@ -22,7 +22,7 @@ services:
     ports:
       - "9092:9092"
   postgres:
-    image: postgres:latest
+    image: debezium/example-postgres:1.7
     ports:
       - "5432:5432"
     environment:
@@ -32,14 +32,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres-setup/init.sql:/docker-entrypoint-initdb.d/init.sql
-      #- ./postgres-setup/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - ./postgres-setup/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
   mongodb:
     image: mongo:5.0.27
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "mongo"
-      MONGO_INITDB_ROOT_PASSWORD: "mongo123"
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo123
+      MONGO_INITDB_DATABASE: testdb
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
       - ./mongo-setup/init.js:/docker-entrypoint-initdb.d/init.js
@@ -70,8 +71,6 @@ services:
       - "8083:8083"
     volumes:
       - ./connect-plugins:/etc/kafka-connect/jars
-
-  
 volumes:
   zookeeper_data:
     driver: local
