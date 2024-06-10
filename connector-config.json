@@ -1,16 +1,15 @@
 {
-    "name": "postgres-connector",
-    "config": {
-      "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-      "tasks.max": "1",
-      "database.hostname": "postgres",
-      "database.port": "5432",
-      "database.user": "postgres",
-      "database.password": "postgres123",
-      "database.dbname": "testdb",
-      "database.server.name": "postgres_server",
-      "table.whitelist": "public.data_table",
-      "database.history.kafka.bootstrap.servers": "kafka:9092",
-      "database.history.kafka.topic": "schema-changes.inventory"
-    }
+  "name": "postgres-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres123",
+    "database.dbname": "testdb",
+    "database.server.name": "dbserver1",
+    "table.whitelist": "public.data_table",
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "schema-changes.inventory"
   }
+}

@@ -22,7 +22,7 @@ services:
     ports:
       - "9092:9092"
   postgres:
-    image: debezium/example-postgres:1.5
+    image: postgres:latest
     ports:
       - "5432:5432"
     environment:
@@ -31,11 +31,10 @@ services:
       POSTGRES_DB: testdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-postgres:/docker-entrypoint-initdb.d
-      - ./postgres-config/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - ./postgres-setup/init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- ./postgres-setup/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
   mongodb:
     image: mongo:5.0.27
-    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: "mongo"
       MONGO_INITDB_ROOT_PASSWORD: "mongo123"
@@ -43,7 +42,7 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data:/data/db
-      - ./init-mongo/init.js:/docker-entrypoint-initdb.d/init.js
+      - ./mongo-setup/init.js:/docker-entrypoint-initdb.d/init.js
   connect:
     image: confluentinc/cp-kafka-connect:latest
     depends_on:
@@ -53,21 +52,25 @@ services:
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: "quickstart"
-      CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-config"
-      CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-offsets"
-      CONNECT_STATUS_STORAGE_TOPIC: "quickstart-status"
+      CONNECT_GROUP_ID: "compose-connect-group"
+      CONNECT_CONFIG_STORAGE_TOPIC: "docker-connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "docker-connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "docker-connect-status"
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
+      CONNECT_JAVA_OPTS: "-Xms512m -Xmx512m"
     ports:
       - "8083:8083"
     volumes:
       - ./connect-plugins:/etc/kafka-connect/jars
+
   
 volumes:
   zookeeper_data:
