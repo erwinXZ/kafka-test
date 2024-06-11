@@ -1,4 +1,4 @@
-# PostgreSQL to MongoDB Replication with Kafka, Debezium, and Zookeeper
+# PostgreSQL to MongoDB Replication with Kafka, Kafka Connect, Debezium, and Zookeeper
 
 This setup demonstrates how to replicate data from a PostgreSQL database to a MongoDB database using Kafka, Debezium, and Zookeeper.
 
