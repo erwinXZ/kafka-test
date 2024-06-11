@@ -32,7 +32,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres-setup/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./postgres-setup/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      #- ./postgres-setup/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
   mongodb:
     image: mongo:5.0.27
     environment:

@@ -3,14 +3,16 @@
   "config": {
     "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
     "tasks.max": "1",
-    "topics": "dbserver1.public.testdb",
-    "connection.uri": "mongodb://mongo:mongo123@172.23.0.3:27017",
+    "topics": "dbserver1.public.data_table",
+    "connection.uri": "mongodb://mongo:mongo123@mongodb:27017",
     "database": "testdb",
     "collection": "data_table",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "key.converter.schemas.enable": "false",
     "value.converter.schemas.enable": "false",
-    "write.model.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy"
+    "transforms": "unwrap",                                                    
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState", 
+    "transforms.unwrap.drop.tombstones": "true"
   }
 }

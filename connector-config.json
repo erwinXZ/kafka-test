@@ -2,14 +2,16 @@
   "name": "postgres-source",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
     "database.hostname": "postgres",
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "postgres123",
     "database.dbname": "testdb",
     "database.server.name": "dbserver1",
-    "table.whitelist": "public.data_table",
-    "database.history.kafka.bootstrap.servers": "kafka:9092",
-    "database.history.kafka.topic": "schema-changes.inventory"
+    "table.include.list": "public.data_table",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium",
+    "publication.name": "dbserver1"
   }
 }
