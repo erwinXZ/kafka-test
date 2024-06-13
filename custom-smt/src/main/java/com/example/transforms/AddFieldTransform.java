@@ -39,12 +39,14 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> mongoCollection;
+    private MongoCollection<Document> mongoCollectionTest;
 
     @Override
     public void configure(Map<String, ?> configs) {
         mongoClient = MongoClients.create(settings);
         mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
         mongoCollection = mongoDatabase.getCollection(COLLECTION_NAME);
+        mongoCollectionTest = mongoDatabase.getCollection("new_collection");
     }
 
     /**
@@ -161,6 +163,8 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
 
         // Perform the update operation with ReplaceOptions for upsert
         mongoCollection.replaceOne(filter, structToDocument(updatedValue), new ReplaceOptions().upsert(true));
+
+        /* mongoCollectionTest.replaceOne(filter, structToDocument(updatedValue), new ReplaceOptions().upsert(true)); */
     }
 
     // Helper method to convert Struct to Document

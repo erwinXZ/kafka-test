@@ -118,3 +118,28 @@ To clean up the environment, stop and remove all containers:
 ```bash
 docker-compose down -v
 ```
+
+## Custom SMT (Single Message Transform) for Kafka Connect
+
+This project provides a custom Single Message Transform (SMT) for Kafka Connect. The custom SMT `AddFieldTransform` transforms Kafka Connect records by adding, updating, and deleting documents in a MongoDB collection based on changes in a PostgreSQL database.
+
+### Features
+
+- Adds new records to MongoDB when new records are inserted in PostgreSQL.
+- Updates existing records in MongoDB when records are updated in PostgreSQL.
+- Deletes records from MongoDB when records are deleted in PostgreSQL.
+- Handles only the `after` part of the change event from PostgreSQL to MongoDB.
+
+### Prerequisites
+
+- Java 8 or later
+- Maven
+- Docker and Docker Compose
+
+### 1. Build the project
+```sh
+mvn clean package
+```
+
+### 2. Copy the jar file
+Copy the result jar in the target file into the connect-plugins folder

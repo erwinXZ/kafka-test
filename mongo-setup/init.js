@@ -8,6 +8,8 @@ db.createUser({
     roles: [{ role: "readWrite", db: "testdb" }] // Assign the user readWrite role for the testdb database
 });
 db.createCollection('data_table'); // Create 'data_table'
+db.createCollection('new_collection');
+
 //db.data_table.insertMany([
 //    { name: "Document 1", value: 100 },
 //    { name: "Document 2", value: 200 },
