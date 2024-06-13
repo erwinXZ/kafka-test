@@ -5,7 +5,6 @@ import org.apache.kafka.connect.data.Field;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
-import org.apache.kafka.connect.sink.SinkTaskContext;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.common.config.ConfigDef;
 
@@ -17,7 +16,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -32,9 +30,22 @@ import java.util.Map;
 public class AddFieldTransform<R extends ConnectRecord<R>> implements Transformation<R> {
 
     private static final Logger log = LoggerFactory.getLogger(AddFieldTransform.class);
+    private static final String MONGODB_URI = "mongodb://mongo:mongo123@mongodb:27017/testdb";
+    private static final String DATABASE_NAME = "testdb";
+    private static final String COLLECTION_NAME = "data_table";
+    MongoClientSettings settings = MongoClientSettings.builder()
+            .applyConnectionString(new ConnectionString(MONGODB_URI))
+            .build();
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> mongoCollection;
+
+    @Override
+    public void configure(Map<String, ?> configs) {
+        mongoClient = MongoClients.create(settings);
+        mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        mongoCollection = mongoDatabase.getCollection(COLLECTION_NAME);
+    }
 
     /**
      * This method is called for each record and applies the transformation.
@@ -52,8 +63,8 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
             // Extract the operation type
             String op = value.getString("op");
             log.debug("Operation: " + op);
-            
-            if ("c".equals(op) || "u".equals(op) || "r".equals(op)) { // Handle create or update
+
+            if ("c".equals(op) || "u".equals(op) || "r".equals(op)) { // Handle read, create or update
                 // Extract the 'after' field from the envelope
                 Struct after = value.getStruct("after");
                 if (after != null) {
@@ -95,7 +106,8 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
                     // Delete from MongoDB
                     deleteFromMongoDB(before);
 
-                    return record.newRecord(record.topic(), record.kafkaPartition(), record.keySchema(), record.key(), record.valueSchema(), null, record.timestamp());
+                    return record.newRecord(record.topic(), record.kafkaPartition(), record.keySchema(), record.key(),
+                            record.valueSchema(), null, record.timestamp());
                 } else {
                     log.warn("No 'before' field found in the record: {}", record);
                 }
@@ -115,12 +127,8 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
         SchemaBuilder builder = SchemaBuilder.struct();
 
         // Copy existing fields to the new schema
-        for (Field field : afterSchema.fields()) {
-            builder.field(field.name(), field.schema());
-        }
+        afterSchema.fields().forEach(field -> builder.field(field.name(), field.schema()));
 
-        // Add a new field to the schema
-        builder.field("newField", Schema.STRING_SCHEMA);
         return builder.build();
     }
 
@@ -134,14 +142,7 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
      */
     private Struct createUpdatedValue(Struct after, Schema updatedSchema) {
         Struct updatedValue = new Struct(updatedSchema);
-
-        // Copy existing fields to the new Struct
-        for (Field field : after.schema().fields()) {
-            updatedValue.put(field.name(), after.get(field));
-        }
-
-        // Add a new field value to the new Struct
-        updatedValue.put("newField", "newValue");
+        updatedValue.schema().fields().forEach(field -> updatedValue.put(field, after.get(field)));
         return updatedValue;
     }
 
@@ -149,19 +150,17 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
         // Extract the value of 'id' from the updatedValue Struct
         Object id = updatedValue.get("id");
 
-        // Convert the updatedValue Struct to a Document
-        Document document = structToDocument(updatedValue);
-
         // Ensure 'id' exists before attempting to update
-        if (id != null) {
-            // Construct the filter to find the document by 'id'
-            Bson filter = Filters.eq("id", id);
-
-            // Perform the update operation with ReplaceOptions for upsert
-            mongoCollection.replaceOne(filter, document, new ReplaceOptions().upsert(true));
-        } else {
+        if (id == null) {
             log.error("Document does not contain 'id' field: {}", updatedValue);
+            return;
         }
+
+        // Construct the filter to find the document by 'id'
+        Bson filter = Filters.eq("id", id);
+
+        // Perform the update operation with ReplaceOptions for upsert
+        mongoCollection.replaceOne(filter, structToDocument(updatedValue), new ReplaceOptions().upsert(true));
     }
 
     // Helper method to convert Struct to Document
@@ -207,22 +206,5 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
         if (mongoClient != null) {
             mongoClient.close();
         }
-    }
-
-    /**
-     * Configures the transformation with the given configuration.
-     *
-     * @param configs the configuration settings
-     */
-    @Override
-    public void configure(Map<String, ?> configs) {
-        String connectionString = "mongodb://mongo:mongo123@mongodb:27017/testdb"; // MongoDB connection string
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(connectionString))
-                .build();
-        mongoClient = MongoClients.create(settings);
-        mongoDatabase = mongoClient.getDatabase("testdb"); // Replace with your database name
-        mongoCollection = mongoDatabase.getCollection("data_table"); // Replace with your collection name
-
     }
 }
