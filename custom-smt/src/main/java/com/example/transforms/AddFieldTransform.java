@@ -39,14 +39,14 @@ public class AddFieldTransform<R extends ConnectRecord<R>> implements Transforma
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> mongoCollection;
-    private MongoCollection<Document> mongoCollectionTest;
+    // private MongoCollection<Document> mongoCollectionTest;
 
     @Override
     public void configure(Map<String, ?> configs) {
         mongoClient = MongoClients.create(settings);
         mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
         mongoCollection = mongoDatabase.getCollection(COLLECTION_NAME);
-        mongoCollectionTest = mongoDatabase.getCollection("new_collection");
+        //mongoCollectionTest = mongoDatabase.getCollection("new_collection");
     }
 
     /**
