@@ -1,0 +1,54 @@
+# Maven target directory
+/target/
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.iws
+
+# MacOS files
+.DS_Store
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+
+# Compiled class files
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# VS Code settings
+.vscode/
+
+# Ignore local environment configuration
+env/
+
+# Node modules (in case you have any node dependency)
+/node_modules/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Ignore configuration files
+*.conf
+*.properties
+
+# Ignore binary files
+*.bin
+
+# Ignore build output directories
+/build/
+out/
