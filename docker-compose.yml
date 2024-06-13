@@ -68,9 +68,12 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
       CONNECT_JAVA_OPTS: "-Xms512m -Xmx512m"
+      CONNECT_LOG4J_LOGGERS: "com.example.transforms.AddFieldTransform=DEBUG"
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka-connect/log4j.properties"
     ports:
       - "8083:8083"
     volumes:
+      - ./log4j.properties:/etc/kafka-connect/log4j.properties
       - ./connect-plugins:/etc/kafka-connect/jars
 volumes:
   zookeeper_data:
