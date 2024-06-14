@@ -1,0 +1,54 @@
+# Maven target directory
+/custom-smt/target/
+
+# Eclipse files
+/custom-smt/.classpath
+/custom-smt/.project
+/custom-smt/.settings/
+
+# IntelliJ IDEA files
+/custom-smt/.idea/
+/custom-smt/*.iml
+/custom-smt/*.iws
+
+# MacOS files
+.DS_Store
+
+# Log files
+/custom-smt/*.log
+
+# Temporary files
+/custom-smt/*.tmp
+/custom-smt/*.temp
+/custom-smt/*.swp
+
+# Compiled class files
+/custom-smt/*.class
+
+# Package Files #
+/custom-smt/*.jar
+/custom-smt/*.war
+/custom-smt/*.ear
+
+# VS Code settings
+.vscode/
+
+# Ignore local environment configuration
+/custom-smt/env/
+
+# Node modules (in case you have any node dependency)
+/custom-smt/node_modules/
+
+# Maven wrapper
+/custom-smt/.mvn/wrapper/maven-wrapper.jar
+
+# Ignore configuration files
+/custom-smt/*.conf
+/custom-smt/*.properties
+
+# Ignore binary files
+/custom-smt/*.bin
+
+# Ignore build output directories
+/custom-smt/build/
+/custom-smt/out/
